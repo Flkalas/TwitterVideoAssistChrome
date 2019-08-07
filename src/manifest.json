@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Twitter Media Assist",
   "description": "For your better Twitter media experience.",
-  "version": "2.1",
+  "version": "2.1.1",
 
   "permissions": [
     "*://twitter.com/*",
