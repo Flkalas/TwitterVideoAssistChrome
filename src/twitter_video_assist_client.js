@@ -28,9 +28,6 @@ function initialize() {
     $("body").append(progressPopup);
 }
 
-// css-1dbjc4n r-18u37iz r-1pi2tsx r-13qz1uu
-// css-1dbjc4n r-18u37iz r-1pi2tsx r-13qz1uu
-
 function injectAdditionalDownloadButtons(event) {
     const tweets = $(event.target).find('article')
 
