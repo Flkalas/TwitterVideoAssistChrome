@@ -4,11 +4,21 @@ function processBlobVideo(id, readableName) {
         isVideoSaveAsMP4: true,
     }, (items) => {
         if (items.isVideoSaveAsTS) {
-            preprocessComplexTsVideo(id, readableName);
+            chrome.runtime.sendMessage({
+                type: 'preprocessComplexTsVideo',
+                id: id,
+                ct0: getCookie("ct0"),
+                readableName: readableName
+            })
         }
 
         if (items.isVideoSaveAsMP4) {
-            processComplexMp4Video(id, readableName);
+            chrome.runtime.sendMessage({
+                type: 'processComplexMp4Video',
+                id: id,
+                ct0: getCookie("ct0"),
+                readableName: readableName
+            })
         }
     });
 }
@@ -36,17 +46,13 @@ function processGifVideo(url, readableName) {
     });
 }
 
-async function preprocessComplexTsVideo(id, readableName) {
+async function preprocessComplexTsVideo(id, ct0, readableName) {
     var jsonUrl = "https://api.twitter.com/1.1/videos/tweet/config/";
     jsonUrl += id + ".json";
 
-    var playlistUrl = await getPlaylistUrl(jsonUrl);
+    var playlistUrl = await getPlaylistUrl(jsonUrl, ct0);
 
-    chrome.runtime.sendMessage({
-        type: 'tsVideo',
-        playlistUrl: playlistUrl,
-        readableName: readableName
-    });
+    processComplexTsVideo(playlistUrl, readableName);
 }
 
 async function processComplexTsVideo(playlistUrl, readableName) {
@@ -57,14 +63,11 @@ async function processComplexTsVideo(playlistUrl, readableName) {
     downloadTsVideo(videoData, filename, readableName)
 }
 
-async function processComplexMp4Video(id, readableName) {
+async function processComplexMp4Video(id, ct0, readableName) {
     var pageUrl = "https://api.twitter.com/1.1/statuses/show.json?include_profile_interstitial_type=1&include_blocking=1&include_blocked_by=1&include_followed_by=1&include_want_retweets=1&include_mute_edge=1&include_can_dm=1&skip_status=1&cards_platform=Web-12&include_cards=1&include_ext_alt_text=true&include_reply_count=1&tweet_mode=extended&trim_user=false&include_ext_media_color=true&id=" + id;
-    var mp4Url = await getMp4Url(pageUrl);
-    chrome.runtime.sendMessage({
-        type: 'mp4Video',
-        url: mp4Url,
-        readableName: readableName
-    });
+    var mp4Url = await getMp4Url(pageUrl, ct0);
+
+    downloadMp4Video(mp4Url, readableName);
 }
 
 function processImageDownload(src, readableName) {
@@ -75,7 +78,7 @@ function processImageDownload(src, readableName) {
     });
 }
 
-function getMp4Url(url) {
+function getMp4Url(url, ct0) {
     return new Promise((resolve, reject) => {
         var init = {
             origin: 'https://mobile.twitter.com',
@@ -83,7 +86,7 @@ function getMp4Url(url) {
                 "Accept": '*/*',
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0",
                 "authorization": "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA",
-                "x-csrf-token": getCookie("ct0"),
+                "x-csrf-token": ct0
             },
             credentials: 'include',
             referrer: 'https://mobile.twitter.com'
@@ -117,7 +120,7 @@ function getMp4Url(url) {
     });
 }
 
-function getPlaylistUrl(url) {
+function getPlaylistUrl(url, ct0) {
     return new Promise((resolve, reject) => {
         var init = {
             method: 'GET',
@@ -127,7 +130,7 @@ function getPlaylistUrl(url) {
                 "Accept": '*/*',
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:62.0) Gecko/20100101 Firefox/62.0",
                 "authorization": "Bearer AAAAAAAAAAAAAAAAAAAAAPYXBAAAAAAACLXUNDekMxqa8h%2F40K4moUkGsoc%3DTYfbDKbT3jJPCEVnMYqilB28NHfOPqkca3qaAxGfsyKCs0wRbw",
-                "x-csrf-token": getCookie("ct0"),
+                "x-csrf-token": ct0
             },
             credentials: 'include',
             referrer: 'https://twitter.com'

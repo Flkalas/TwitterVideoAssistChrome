@@ -232,7 +232,7 @@ function toggleReactProgressPopup(request) {
         let spinner = $('.tva-react-spinner-wrapper')
         if (spinner.length && request.hideSpinner) {
             spinner.remove();
-        } else {
+        } else if (!spinner.length) {
             $('.css-1dbjc4n.r-16y2uox.r-1wbh5a2.r-1pi2tsx.r-1777fci h2:first-child ').append($(reactProgressPopup));
         }
     } else {

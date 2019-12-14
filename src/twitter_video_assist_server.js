@@ -11,16 +11,20 @@ function processRequest(request) {
             convertGif(request.url, request.readableName);
             break;
 
-        case 'tsVideo':
-            processComplexTsVideo(request.playlistUrl, request.readableName);
-            break;
-
         case 'mp4Video':
             downloadMp4Video(request.url, request.readableName);
             break;
 
         case 'image':
             downloadImage(request.url, request.readableName)
+            break;
+
+        case 'preprocessComplexTsVideo':
+            preprocessComplexTsVideo(request.id, request.ct0, request.readableName);
+            break;
+
+        case 'processComplexMp4Video':
+            processComplexMp4Video(request.id, request.ct0, request.readableName);
             break;
     }
 }
